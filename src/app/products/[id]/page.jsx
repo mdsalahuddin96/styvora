@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { cartContext } from "@/providers/CartProvider";
+import toast from "react-hot-toast";
 
 export default function ProductDetails({ params }) {
   const [product, setProduct] = useState(null);
@@ -22,8 +23,8 @@ export default function ProductDetails({ params }) {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const {cartItem,setCartItem}=useContext(cartContext)
-  
+  const { cartItem, setCartItem } = useContext(cartContext);
+
   useEffect(() => {
     try {
       const fetchData = async () => {
@@ -42,21 +43,25 @@ export default function ProductDetails({ params }) {
     }
   }, [id]);
 
-  const handleAddToCart=()=>{
-    const totalPrice=parseInt(quantity) * parseInt(product?.price)
-    if(!selectedColor||!selectedSize){
-        toast.error("Select size and color")
-        return;
+  const handleAddToCart = () => {
+    const totalPrice = parseInt(quantity) * parseInt(product?.price);
+    if (!selectedColor || !selectedSize) {
+      toast.error("Select size and color");
+      return;
     }
-    const item={
-        productId:product?.id,
-        price:totalPrice,
-        color:selectedColor,
-        size:selectedSize,
-        quantity:quantity
-    }
-    setCartItem([...cartItem,item])
-  }
+    const item = {
+      productId: product?.id,
+      name:product?.name,
+      price: product?.price,
+      color: selectedColor,
+      size: selectedSize,
+      quantity: quantity,
+      totalPrice,
+      image:product?.image
+    };
+    setCartItem([...cartItem, item]);
+    toast.success("Item added to cart!");
+  };
   if (isLoading || !product) {
     return (
       <div className="flex mt-10 items-center justify-center ">
@@ -64,7 +69,6 @@ export default function ProductDetails({ params }) {
       </div>
     );
   }
-  console.log("cart Item",cartItem)
   return (
     <section className="bg-[#FAF9F6] py-16">
       <div className="mx-auto max-w-7xl px-6">
@@ -183,31 +187,31 @@ export default function ProductDetails({ params }) {
 
             <div className="mt-10">
               <h3 className="font-semibold">Quantity</h3>
-
-              <div className="mt-4 flex w-fit items-center rounded-xl border">
+              <div className="mt-4 w-fit flex items-center rounded-xl border border-gray-300 bg-white shadow-sm">
                 <button
                   onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                  className="p-4 hover:bg-gray-100"
+                  className="p-3 text-gray-500 transition hover:bg-gray-50 hover:text-[#111111]"
                 >
-                  <Minus size={18} />
+                  <Minus size={14} />
                 </button>
-
                 <span className="w-16 text-center font-semibold">
                   {quantity}
                 </span>
-
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-4 hover:bg-gray-100"
+                  className="p-3 text-gray-500 transition hover:bg-gray-50 hover:text-[#111111]"
                 >
-                  <Plus size={18} />
+                  <Plus size={14} />
                 </button>
               </div>
             </div>
 
             {/* Add Cart */}
 
-            <button onClick={handleAddToCart} className="mt-10 flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#111111] to-[#C98A5D] py-5 text-lg font-semibold text-white transition hover:scale-[1.02]">
+            <button
+              onClick={handleAddToCart}
+              className="mt-10 flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#111111] to-[#C98A5D] py-5 text-lg font-semibold text-white transition hover:scale-[1.02]"
+            >
               <ShoppingBag size={22} />
               Add To Cart
             </button>

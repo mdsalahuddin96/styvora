@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, ShoppingBag, X } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { cartContext } from "@/providers/CartProvider";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const {cartItem}=useContext(cartContext)
+  console.log(cartItem)
   const navLinks = [
     {
       name: "Home",
@@ -79,7 +81,7 @@ export default function Navbar() {
             />
 
             <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#C98A5D] text-[10px] font-bold text-white">
-              3
+              {cartItem.length}
             </span>
           </Link>
         </div>
@@ -132,7 +134,7 @@ export default function Navbar() {
             <span>Shopping Cart</span>
 
             <span className="rounded-full bg-[#C98A5D] px-3 py-1 text-sm">
-              3
+              {cartItem.length}
             </span>
           </Link>
         </div>
