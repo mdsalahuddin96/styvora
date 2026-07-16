@@ -2,12 +2,15 @@
 
 import { Heart, Search, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [searchInput, setSearchInput] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [filteredProducts, setFilteredProducts] = useState([]);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -16,6 +19,7 @@ const ProductsPage = () => {
         const products = await res.json();
         if (products) {
           setProducts(products);
+          setFilteredProducts(products);
           setIsLoading(false);
         }
       } catch (error) {
@@ -24,7 +28,26 @@ const ProductsPage = () => {
     };
     fetchProduct();
   }, []);
-  const filteredProducts = products;
+  useEffect(() => {
+    if (products.length === 0 && isLoading) return;
+    let updatedProducts = [...products];
+
+    if (filter !== "all") {
+      updatedProducts = updatedProducts.filter(
+        (product) => product.category.toLowerCase() === filter.toLowerCase()
+      );
+    }
+
+    if (searchInput.trim() !== "") {
+      const searchTerms = searchInput.toLowerCase();
+      updatedProducts = updatedProducts.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerms) ||
+          product.category.toLowerCase().includes(searchTerms)
+      );
+    }
+    setFilteredProducts(updatedProducts);
+  }, [searchInput, filter, products, isLoading]);
   return (
     <section className="bg-[#FAF9F6] py-10">
       <div className="mx-auto max-w-7xl ">
@@ -43,43 +66,52 @@ const ProductsPage = () => {
             carefully selected for modern women.
           </p>
           {/* Search */}
-          <div className="relative w-full lg:max-w-md mt-5">
-            <Search
-              size={20}
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+          <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center">
+            {/* Search Input */}
+            <div className="relative w-full lg:max-w-md ">
+              <Search
+                size={20}
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+              />
 
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full rounded-2xl border border-gray-300 bg-white py-4 pl-14 pr-5 outline-none transition focus:border-[#C98A5D] focus:ring-2 focus:ring-[#C98A5D]/20"
-            />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search products..."
+                className="w-full rounded-2xl border border-gray-300 bg-white py-4 pl-14 pr-5 outline-none transition focus:border-[#C98A5D] focus:ring-2 focus:ring-[#C98A5D]/20"
+              />
+            </div>
           </div>
         </div>
+
         {/* Category & Total Products*/}
         <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <select className="rounded-2xl border border-gray-300 bg-white px-6 py-4 outline-none transition focus:border-[#C98A5D]">
-            <option value="All">All Categories</option>
+          <select
+            onChange={(e) => setFilter(e.target.value)}
+            className="rounded-2xl border border-gray-300 bg-white px-6 py-4 outline-none transition focus:border-[#C98A5D]"
+          >
+            <option value="all">All Categories</option>
 
-            <option>Dress</option>
+            <option value="dress">Dress</option>
 
-            <option>Blazer</option>
+            <option value="blazer">Blazer</option>
 
-            <option>Bags</option>
+            <option value="bags">Bags</option>
 
-            <option>Shoes</option>
+            <option value="shoes">Shoes</option>
 
-            <option>Accessories</option>
+            <option value="accessories">Accessories</option>
 
-            <option>Cardigan</option>
+            <option value="cardigan">Cardigan</option>
 
-            <option>Pants</option>
+            <option value="pants">Pants</option>
           </select>
           <div className="mt-10 flex items-center justify-between">
             <p className="text-gray-500">
               Showing
               <span className="mx-2 font-bold text-[#111111]">
-                {products.length}
+                {filteredProducts.length}
               </span>
               Products
             </p>
@@ -164,10 +196,10 @@ const ProductsPage = () => {
                     </p>
                   </div>
 
-                  <button className="flex items-center gap-2 rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C98A5D]">
+                  <Link href={`/products/${product?.id}`} className="flex items-center gap-2 rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C98A5D]">
                     <ShoppingBag size={18} />
                     Add
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -98,10 +98,10 @@ export default function FeaturedProducts({ products }) {
                     </p>
                   </div>
 
-                  <button className="flex items-center gap-2 rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C98A5D]">
+                  <Link href={`/products/${product.id}`} className="flex items-center gap-2 rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C98A5D]">
                     <ShoppingBag size={18} />
                     Add
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
