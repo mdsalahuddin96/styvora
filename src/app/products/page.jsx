@@ -1,33 +1,99 @@
+"use client";
+
+import { Heart, Search, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
-import { Heart, ShoppingBag, Star } from "lucide-react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default function FeaturedProducts({ products }) {
-  const featuredProducts = products.slice(0, 4);
+const ProductsPage = () => {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch("/products.json");
+        const products = await res.json();
+        if (products) {
+          setProducts(products);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProduct();
+  }, []);
+  const filteredProducts = products;
   return (
-    <section className="bg-[#FAF9F6] py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        {/* Heading */}
-        <div className="mb-14 text-center">
+    <section className="bg-[#FAF9F6] py-10">
+      <div className="mx-auto max-w-7xl ">
+        {/* Header */}
+        <div className="text-center flex flex-col justify-center items-center">
           <span className="rounded-full bg-[#C98A5D]/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.25em] text-[#C98A5D]">
-            Featured Collection
+            Our Collection
           </span>
 
-          <h2 className="mt-6 text-4xl font-black text-[#111111] md:text-5xl">
-            Best Selling Products
-          </h2>
+          <h1 className=" text-5xl font-black text-[#111111]">
+            Explore Fashion
+          </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl text-gray-500">
-            Discover our most loved pieces, carefully selected to bring
-            elegance, confidence and timeless fashion into your wardrobe.
+          <p className="mx-auto mt-2 max-w-2xl text-gray-500">
+            Browse premium clothing, accessories and timeless essentials
+            carefully selected for modern women.
           </p>
+          {/* Search */}
+          <div className="relative w-full lg:max-w-md mt-5">
+            <Search
+              size={20}
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full rounded-2xl border border-gray-300 bg-white py-4 pl-14 pr-5 outline-none transition focus:border-[#C98A5D] focus:ring-2 focus:ring-[#C98A5D]/20"
+            />
+          </div>
         </div>
+        {/* Category & Total Products*/}
+        <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <select className="rounded-2xl border border-gray-300 bg-white px-6 py-4 outline-none transition focus:border-[#C98A5D]">
+            <option value="All">All Categories</option>
 
-        {/* Products */}
+            <option>Dress</option>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.map((product) => (
+            <option>Blazer</option>
+
+            <option>Bags</option>
+
+            <option>Shoes</option>
+
+            <option>Accessories</option>
+
+            <option>Cardigan</option>
+
+            <option>Pants</option>
+          </select>
+          <div className="mt-10 flex items-center justify-between">
+            <p className="text-gray-500">
+              Showing
+              <span className="mx-2 font-bold text-[#111111]">
+                {products.length}
+              </span>
+              Products
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex mt-10 items-center justify-center ">
+          <div className="h-10 w-10 animate-spin rounded-full border-[6px] border-[#111111]/20 border-t-[#C98A5D]"></div>
+        </div>
+      ) : (
+        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="group flex flex-col h-full overflow-hidden rounded-3xl bg-white shadow-md transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
@@ -107,16 +173,9 @@ export default function FeaturedProducts({ products }) {
             </div>
           ))}
         </div>
-
-        <div className="mt-14 text-center">
-          <Link
-            href={"/products"}
-            className="rounded-full bg-gradient-to-r from-[#111111] to-[#C98A5D] px-10 py-4 font-semibold text-white"
-          >
-            View All Products
-          </Link>
-        </div>
-      </div>
+      )}
     </section>
   );
-}
+};
+
+export default ProductsPage;
